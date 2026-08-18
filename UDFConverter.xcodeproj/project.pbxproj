@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		042CFE102FB137F900EA3FF7 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 042CFE0F2FB137F900EA3FF7 /* ZIPFoundation */; };
+		04F88A3C302930C4008DD051 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 04F88A3B302930C4008DD051 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,9 +34,22 @@
 		042CFDEF2FB1364500EA3FF7 /* UDFConverterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDFConverterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		04F88A3E3029349D008DD051 /* Exceptions for "UDFConverter" folder in "UDFConverter" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 042CFDD72FB1364400EA3FF7 /* UDFConverter */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		042CFDDA2FB1364400EA3FF7 /* UDFConverter */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				04F88A3E3029349D008DD051 /* Exceptions for "UDFConverter" folder in "UDFConverter" target */,
+			);
 			path = UDFConverter;
 			sourceTree = "<group>";
 		};
@@ -56,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04F88A3C302930C4008DD051 /* GoogleMobileAds in Frameworks */,
 				042CFE102FB137F900EA3FF7 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -126,6 +141,7 @@
 			name = UDFConverter;
 			packageProductDependencies = (
 				042CFE0F2FB137F900EA3FF7 /* ZIPFoundation */,
+				04F88A3B302930C4008DD051 /* GoogleMobileAds */,
 			);
 			productName = UDFConverter;
 			productReference = 042CFDD82FB1364400EA3FF7 /* UDFConverter.app */;
@@ -211,6 +227,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				042CFE0D2FB1376500EA3FF7 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				04F88A3A302930C4008DD051 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 042CFDD92FB1364400EA3FF7 /* Products */;
@@ -417,6 +434,10 @@
 				DEVELOPMENT_TEAM = F3V9L8ZFD5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = UDFConverter/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = UDF2PDF;
+				INFOPLIST_KEY_GADApplicationIdentifier = "ca-app-pub-1674562447830288~5149116361";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -449,6 +470,10 @@
 				DEVELOPMENT_TEAM = F3V9L8ZFD5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = UDFConverter/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = UDF2PDF;
+				INFOPLIST_KEY_GADApplicationIdentifier = "ca-app-pub-1674562447830288~5149116361";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -605,6 +630,14 @@
 				minimumVersion = 0.9.20;
 			};
 		};
+		04F88A3A302930C4008DD051 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.7.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -612,6 +645,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 042CFE0D2FB1376500EA3FF7 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		04F88A3B302930C4008DD051 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 04F88A3A302930C4008DD051 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

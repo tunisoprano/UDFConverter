@@ -13,11 +13,11 @@ struct UDFParagraph {
     // Paragraph-level layout
     let leftIndent:      Double   // pt
     let firstLineIndent: Double   // pt (positive = indent, negative = hanging)
-    let rightIndent:     Double   // pt
+    let rightIndent:     Double   // ptx
     let spaceAbove:      Double   // pt
     let spaceBelow:      Double   // pt
     let lineSpacing:     Double   // pt (0 = single)
-    let tabStop:         Double?  // first tab-stop position in pt
+    let tabStops:        [Double] // all tab-stop positions in pt
 
     enum TextAlignment: Int {
         case center  = 1

@@ -1,0 +1,43 @@
+{
+  "identifier" : "62D58E24-6751-4DA5-AB0F-9875B1D18521",
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
+  "settings" : {
+    "_locale" : "tr_TR",
+    "_storefront" : "TUR"
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "07AF7E38-6D6C-44B8-9C3B-C4362D596C4A",
+      "localizations" : [],
+      "name" : "Premium Access",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "99.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "9D7ABA4A-9013-4890-8A03-9E1D27341799",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Aylık yenilenen reklamsız ve sınırsız kullanım aboneliği",
+              "displayName" : "Premium",
+              "locale" : "tr"
+            }
+          ],
+          "productID" : "com.udfconverter.premium",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Premium Monthly",
+          "subscriptionGroupID" : "07AF7E38-6D6C-44B8-9C3B-C4362D596C4A",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

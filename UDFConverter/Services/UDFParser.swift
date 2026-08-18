@@ -55,7 +55,7 @@ final class UDFParser: NSObject {
     private var currentSpaceAbove:      Double = 0
     private var currentSpaceBelow:      Double = 0
     private var currentLineSpacing:     Double = 0
-    private var currentTabStop:         Double? = nil
+    private var currentTabStops:        [Double] = []
 
     // MARK: - XML
 
@@ -76,7 +76,7 @@ final class UDFParser: NSObject {
     private func resetParagraphLayout() {
         currentLeftIndent = 0; currentFirstLineIndent = 0; currentRightIndent = 0
         currentSpaceAbove = 0; currentSpaceBelow = 0; currentLineSpacing = 0
-        currentTabStop = nil
+        currentTabStops = []
     }
 }
 
@@ -105,11 +105,17 @@ extension UDFParser: XMLParserDelegate {
             currentSpaceAbove      = Double(a["SpaceAbove"]      ?? "0") ?? 0
             currentSpaceBelow      = Double(a["SpaceBelow"]      ?? "0") ?? 0
             currentLineSpacing     = Double(a["LineSpacing"]     ?? "0") ?? 0
-            // TabSet format: "123.0:type:leader"
-            if let ts = a["TabSet"], let first = ts.components(separatedBy: ":").first {
-                currentTabStop = Double(first)
+            // TabSet format: "123.0:type:leader 150.0:type:leader"
+            if let ts = a["TabSet"] {
+                currentTabStops = ts.components(separatedBy: .whitespaces)
+                    .compactMap { part in
+                        if let first = part.components(separatedBy: ":").first {
+                            return Double(first)
+                        }
+                        return nil
+                    }
             } else {
-                currentTabStop = nil
+                currentTabStops = []
             }
             // Hanging indent: positive Hanging shifts text right, first line stays
             if let hang = Double(a["Hanging"] ?? "0"), hang > 0 {
@@ -170,7 +176,7 @@ extension UDFParser: XMLParserDelegate {
                 spaceAbove:      currentSpaceAbove,
                 spaceBelow:      currentSpaceBelow,
                 lineSpacing:     currentLineSpacing,
-                tabStop:         currentTabStop
+                tabStops:        currentTabStops
             ))
             insideParagraph = false
             resetParagraphLayout()

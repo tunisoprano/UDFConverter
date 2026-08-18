@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-1674562447830288~5149116361</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Bu veri, size daha alakalı reklamlar göstermek için kullanılacaktır.</string>
+</dict>
+</plist>
