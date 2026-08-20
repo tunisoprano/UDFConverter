@@ -3,9 +3,7 @@ import Foundation
 struct HTMLGenerator {
 
     func generate(from document: UDFDocument) -> String {
-        let body = document.paragraphs
-            .map { paragraph(from: $0, style: document.style) }
-            .joined(separator: "\n")
+        let body = blocks(document.blocks, style: document.style)
 
         let ff = document.style.fontFamily
         let fs = document.style.fontSize
@@ -47,6 +45,23 @@ struct HTMLGenerator {
               flex: 1;
               white-space: pre-wrap;
             }
+            table {
+              border-collapse: collapse;
+              width: 100%;
+              table-layout: fixed;
+            }
+            td {
+              vertical-align: top;
+              padding: 1pt 3pt;
+              word-break: break-word;
+            }
+            table.bordered, table.bordered td {
+              border: 1px solid #000;
+            }
+            img.inline-img {
+              vertical-align: middle;
+              max-width: 100%;
+            }
             @media print {
               body {
                 margin: 0 !important;
@@ -59,6 +74,50 @@ struct HTMLGenerator {
         </body>
         </html>
         """
+    }
+
+    // MARK: - Blocks
+
+    private func blocks(_ blocks: [UDFBlock], style: UDFStyle) -> String {
+        blocks.map { block in
+            switch block {
+            case .paragraph(let p): return paragraph(from: p, style: style)
+            case .table(let t):     return table(from: t, style: style)
+            }
+        }
+        .joined(separator: "\n")
+    }
+
+    // MARK: - Table
+
+    private func table(from t: UDFTable, style: UDFStyle) -> String {
+        // columnSpans oransal değerlerdir; yüzdeye çeviriyoruz.
+        let total = t.columnSpans.reduce(0, +)
+        let cols: String
+        if total > 0 {
+            cols = "<colgroup>" + t.columnSpans
+                .map { "<col style=\"width:\(String(format: "%.2f", $0 / total * 100))%\">" }
+                .joined() + "</colgroup>"
+        } else {
+            cols = ""
+        }
+
+        let rows = t.rows.map { row in
+            let cells = row.cells.map { cell in
+                let inner = blocks(cell.blocks, style: style)
+                return "<td>\(inner.isEmpty ? "&nbsp;" : inner)</td>"
+            }.joined()
+            return "<tr>\(cells)</tr>"
+        }.joined()
+
+        var css: [String] = []
+        if t.leftIndent  > 0 { css.append("margin-left:\(pt(t.leftIndent))") }
+        if t.rightIndent > 0 { css.append("margin-right:\(pt(t.rightIndent))") }
+        if t.spaceAbove  > 0 { css.append("margin-top:\(pt(t.spaceAbove))") }
+        if t.spaceBelow  > 0 { css.append("margin-bottom:\(pt(t.spaceBelow))") }
+
+        let cls = t.hasBorder ? " class=\"bordered\"" : ""
+        return "<table\(cls) style=\"\(css.joined(separator: ";"))\">\(cols)\(rows)</table>"
     }
 
     // MARK: - Paragraph
@@ -151,6 +210,10 @@ struct HTMLGenerator {
     // MARK: - Span
 
     private func span(from s: UDFSpan) -> String {
+        if let data = s.imageData {
+            return "<img class=\"inline-img\" src=\"data:image/png;base64,\(data.base64EncodedString())\">"
+        }
+
         let escaped = s.text
             .replacingOccurrences(of: "&", with: "&amp;")
             .replacingOccurrences(of: "<", with: "&lt;")

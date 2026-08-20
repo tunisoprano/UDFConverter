@@ -27,7 +27,10 @@ final class UDFParser: NSObject {
     // MARK: - ZIP
 
     private func extractContentXML(from url: URL) throws -> Data {
-        guard let archive = Archive(url: url, accessMode: .read) else {
+        let archive: Archive
+        do {
+            archive = try Archive(url: url, accessMode: .read)
+        } catch {
             throw UDFParserError.notAZipFile
         }
         guard let entry = archive["content.xml"] else {
@@ -38,15 +41,40 @@ final class UDFParser: NSObject {
         return result
     }
 
+    // MARK: - Mutable containers used while walking the tree
+
+    /// Blokların biriktiği kap — belge kökü ya da bir tablo hücresi olabilir.
+    private final class BlockContainer {
+        var blocks: [UDFBlock] = []
+    }
+
+    private final class PartialTable {
+        var columnSpans: [Double] = []
+        var hasBorder = false
+        var rows: [UDFTableRow] = []
+        var leftIndent  = 0.0
+        var rightIndent = 0.0
+        var spaceAbove  = 0.0
+        var spaceBelow  = 0.0
+    }
+
+    private final class PartialRow {
+        var isHeader = false
+        var cells: [UDFTableCell] = []
+    }
+
     // MARK: - State
 
     private var fullText         = ""
-    private var paragraphs       = [UDFParagraph]()
     private var style            = UDFStyle.default
     private var insideContent    = false
     private var insideParagraph  = false
     private var currentAlignment = UDFParagraph.TextAlignment.left
     private var currentSpans     = [UDFSpan]()
+
+    private var containerStack = [BlockContainer]()
+    private var tableStack     = [PartialTable]()
+    private var rowStack       = [PartialRow]()
 
     // paragraph layout attrs
     private var currentLeftIndent:      Double = 0
@@ -60,9 +88,11 @@ final class UDFParser: NSObject {
     // MARK: - XML
 
     private func parseXML(_ data: Data) throws -> UDFDocument {
-        fullText = ""; paragraphs = []; style = .default
+        fullText = ""; style = .default
         insideContent = false; insideParagraph = false
         currentSpans = []; resetParagraphLayout()
+        containerStack = [BlockContainer()]
+        tableStack = []; rowStack = []
 
         let parser = XMLParser(data: data)
         parser.delegate = self
@@ -70,7 +100,9 @@ final class UDFParser: NSObject {
         if !parser.parse(), let err = parser.parserError {
             throw UDFParserError.xmlParseFailure(err.localizedDescription)
         }
-        return UDFDocument(fullText: fullText, paragraphs: paragraphs, style: style)
+        return UDFDocument(fullText: fullText,
+                           blocks: containerStack.first?.blocks ?? [],
+                           style: style)
     }
 
     private func resetParagraphLayout() {
@@ -94,6 +126,27 @@ extension UDFParser: XMLParserDelegate {
 
         case "content" where !insideParagraph:
             insideContent = true
+
+        case "table":
+            let t = PartialTable()
+            t.columnSpans = (a["columnSpans"] ?? "")
+                .components(separatedBy: ",")
+                .compactMap { Double($0.trimmingCharacters(in: .whitespaces)) }
+            // border="borderNone" dışındaki her değer çizgili tablo demek
+            t.hasBorder   = (a["border"] ?? "borderNone") != "borderNone"
+            t.leftIndent  = Double(a["LeftIndent"]  ?? "0") ?? 0
+            t.rightIndent = Double(a["RightIndent"] ?? "0") ?? 0
+            t.spaceAbove  = Double(a["SpaceAbove"]  ?? "0") ?? 0
+            t.spaceBelow  = Double(a["SpaceBelow"]  ?? "0") ?? 0
+            tableStack.append(t)
+
+        case "row":
+            let r = PartialRow()
+            r.isHeader = (a["rowType"] ?? "") == "headerRow"
+            rowStack.append(r)
+
+        case "cell":
+            containerStack.append(BlockContainer())
 
         case "paragraph":
             insideParagraph = true; insideContent = false; currentSpans = []
@@ -123,7 +176,16 @@ extension UDFParser: XMLParserDelegate {
                 currentFirstLineIndent  = -hang
             }
 
-        case "content" where insideParagraph:
+        case "image" where insideParagraph:
+            guard let b64 = a["imageData"],
+                  let data = Data(base64Encoded: b64, options: .ignoreUnknownCharacters)
+            else { return }
+            currentSpans.append(UDFSpan(text: "", imageData: data))
+
+        // `content` metnin kendisini, `field`/`space`/`tab` ise doldurulmuş alan,
+        // boşluk ve sekme karakterlerini taşır — hepsi aynı offset şemasını kullanır.
+        case "content", "field", "space", "tab":
+            guard insideParagraph else { return }
             guard
                 let startStr = a["startOffset"], let start = Int(startStr),
                 let lenStr   = a["length"],      let len   = Int(lenStr),
@@ -133,15 +195,13 @@ extension UDFParser: XMLParserDelegate {
             guard start + len <= nsText.length else { return }
             let slice = nsText.substring(with: NSRange(location: start, length: len))
 
-            let bold      = boolAttr(a["bold"])
-            let italic    = boolAttr(a["italic"])
-            let underline = boolAttr(a["underline"])
-            let fontSize  = Double(a["size"] ?? "")
-            let fontFamily = a["family"]
-            let color     = cssColor(from: a["foreground"])
-            currentSpans.append(UDFSpan(text: slice, isBold: bold, isItalic: italic,
-                                        isUnderline: underline, fontSize: fontSize,
-                                        fontFamily: fontFamily, color: color))
+            currentSpans.append(UDFSpan(text: slice,
+                                        isBold: boolAttr(a["bold"]),
+                                        isItalic: boolAttr(a["italic"]),
+                                        isUnderline: boolAttr(a["underline"]),
+                                        fontSize: Double(a["size"] ?? ""),
+                                        fontFamily: a["family"],
+                                        color: cssColor(from: a["foreground"])))
 
         case "style" where !insideParagraph:
             let fam  = a["family"] ?? style.fontFamily
@@ -166,8 +226,10 @@ extension UDFParser: XMLParserDelegate {
                 didEndElement el: String,
                 namespaceURI: String?,
                 qualifiedName _: String?) {
-        if el == "paragraph" {
-            paragraphs.append(UDFParagraph(
+        switch el {
+
+        case "paragraph":
+            let p = UDFParagraph(
                 alignment:       currentAlignment,
                 spans:           currentSpans,
                 leftIndent:      currentLeftIndent,
@@ -177,9 +239,33 @@ extension UDFParser: XMLParserDelegate {
                 spaceBelow:      currentSpaceBelow,
                 lineSpacing:     currentLineSpacing,
                 tabStops:        currentTabStops
-            ))
+            )
+            containerStack.last?.blocks.append(.paragraph(p))
             insideParagraph = false
+            currentSpans = []
             resetParagraphLayout()
+
+        case "cell":
+            guard containerStack.count > 1 else { return }
+            let container = containerStack.removeLast()
+            rowStack.last?.cells.append(UDFTableCell(blocks: container.blocks))
+
+        case "row":
+            guard let r = rowStack.popLast() else { return }
+            tableStack.last?.rows.append(UDFTableRow(isHeader: r.isHeader, cells: r.cells))
+
+        case "table":
+            guard let t = tableStack.popLast() else { return }
+            let table = UDFTable(columnSpans: t.columnSpans,
+                                 hasBorder:   t.hasBorder,
+                                 rows:        t.rows,
+                                 leftIndent:  t.leftIndent,
+                                 rightIndent: t.rightIndent,
+                                 spaceAbove:  t.spaceAbove,
+                                 spaceBelow:  t.spaceBelow)
+            containerStack.last?.blocks.append(.table(table))
+
+        default: break
         }
     }
 
