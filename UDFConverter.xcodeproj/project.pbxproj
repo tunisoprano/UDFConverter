@@ -39,6 +39,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				UDFConverter.storekit,
 			);
 			target = 042CFDD72FB1364400EA3FF7 /* UDFConverter */;
 		};

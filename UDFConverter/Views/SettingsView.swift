@@ -46,6 +46,11 @@ struct SettingsView: View {
                         HStack {
                             Text(L(.premiumActiveBadge))
                                 .font(.subheadline.weight(.semibold))
+                            if let plan = storeManager.activePlan {
+                                Text("· \(L(plan == .lifetime ? .planLifetime : .planMonthly))")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
                             Spacer()
                             Image(systemName: "checkmark.seal.fill")
                                 .foregroundStyle(Color.brandPrimary)

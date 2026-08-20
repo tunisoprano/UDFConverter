@@ -1,7 +1,23 @@
 {
   "identifier" : "62D58E24-6751-4DA5-AB0F-9875B1D18521",
   "nonRenewingSubscriptions" : [],
-  "products" : [],
+  "products" : [
+    {
+      "displayPrice" : "1499.99",
+      "familyShareable" : false,
+      "internalID" : "9C58DB8D-46D4-4FE4-A8E2-DCDC603F165E",
+      "localizations" : [
+        {
+          "description" : "Tek seferlik ödeme ile ömür boyu reklamsız ve sınırsız kullanım",
+          "displayName" : "Premium (Ömür Boyu)",
+          "locale" : "tr"
+        }
+      ],
+      "productID" : "com.udfconverter.premium.lifetime",
+      "referenceName" : "Premium Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
   "settings" : {
     "_locale" : "tr_TR",
     "_storefront" : "TUR"

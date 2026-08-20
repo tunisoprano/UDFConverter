@@ -36,9 +36,9 @@ struct PaywallView: View {
                     .multilineTextAlignment(.center)
 
                 VStack(alignment: .leading, spacing: 16) {
+                    FeatureRow(icon: "doc.text", title: "Word (.docx) Çıktısı", description: "Belgeyi düzenlenebilir Word dosyası olarak dışa aktarın, dilediğiniz gibi üzerinde çalışın.")
                     FeatureRow(icon: "nosign", title: "Reklamsız Deneyim", description: "PDF oluştururken araya giren veya alt kısımda duran tüm reklamları tamamen kaldırın.")
-                    FeatureRow(icon: "infinity", title: "Sınırsız PDF Çıktısı", description: "Dilediğiniz kadar UDF dosyasını PDF'e saniyeler içinde dönüştürün.")
-                    FeatureRow(icon: "arrow.triangle.2.circlepath", title: "Abonelik Süresince Kesintisiz", description: "Aboneliğiniz aktif olduğu sürece tüm Premium özelliklere sınırsız erişin.")
+                    FeatureRow(icon: "infinity", title: "Sınırsız Dönüştürme", description: "Dilediğiniz kadar UDF dosyasını saniyeler içinde dönüştürün.")
                 }
                 .padding(.horizontal)
                 .padding(.top, 8)
@@ -58,35 +58,16 @@ struct PaywallView: View {
                             Task { await storeManager.fetchProducts() }
                         }
                 } else {
-                    ForEach(storeManager.products, id: \.id) { product in
-                        Button {
-                            purchaseTapTrigger.toggle()
-                            Task {
-                                do {
-                                    try await storeManager.purchase(product)
-                                    if storeManager.isPremium {
-                                        dismiss()
-                                    }
-                                } catch {
-                                    storeManager.purchaseErrorMessage = error.localizedDescription
-                                }
-                            }
-                        } label: {
-                            HStack {
-                                Text("Abone Ol")
-                                Spacer()
-                                Text("\(product.displayPrice) / \(periodText(for: product))")
-                            }
+                    VStack(spacing: 12) {
+                        ForEach(storeManager.products, id: \.id) { product in
+                            purchaseButton(for: product)
                         }
-                        .buttonStyle(PrimaryButtonStyle(gradient: .brandAccent))
-                        .sensoryFeedback(.impact(weight: .medium), trigger: purchaseTapTrigger)
-                        .padding(.horizontal)
                     }
 
                     // App Store'un otomatik yenilenen abonelikler için zorunlu kıldığı
                     // fiyat/süre/iptal bilgisi ve Kullanım Koşulları / Gizlilik Politikası bağlantıları.
                     VStack(spacing: 6) {
-                        Text("Premium, seçilen ürünün fiyatı üzerinden aylık olarak faturalandırılır ve mevcut dönem bitmeden en az 24 saat önce iptal edilmezse otomatik olarak yenilenir. Aboneliğinizi Ayarlar > [Apple ID'niz] > Abonelikler üzerinden istediğiniz zaman yönetebilir veya iptal edebilirsiniz.")
+                        Text("Aylık plan seçilirse ücret her ay yenilenir ve dönem bitmeden en az 24 saat önce iptal edilmezse otomatik olarak devam eder; Ayarlar > [Apple ID'niz] > Abonelikler üzerinden istediğiniz zaman yönetebilirsiniz. Ömür boyu plan tek seferlik ödemedir, yenilenmez.")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -124,6 +105,44 @@ struct PaywallView: View {
                 .padding(.bottom, 24)
             }
         }
+    }
+
+    /// Abonelik ve tek seferlik ürün aynı listede olduğu için buton metni ve
+    /// rengi ürün tipine göre değişiyor.
+    @ViewBuilder
+    private func purchaseButton(for product: Product) -> some View {
+        let isLifetime = product.subscription == nil
+
+        VStack(spacing: 4) {
+            Button {
+                purchaseTapTrigger.toggle()
+                Task {
+                    do {
+                        try await storeManager.purchase(product)
+                        if storeManager.isPremium {
+                            dismiss()
+                        }
+                    } catch {
+                        storeManager.purchaseErrorMessage = error.localizedDescription
+                    }
+                }
+            } label: {
+                HStack {
+                    Text(isLifetime ? "Ömür Boyu Al" : "Abone Ol")
+                    Spacer()
+                    Text(isLifetime
+                         ? product.displayPrice
+                         : "\(product.displayPrice) / \(periodText(for: product))")
+                }
+            }
+            .buttonStyle(PrimaryButtonStyle(gradient: isLifetime ? .brandPrimary : .brandAccent))
+            .sensoryFeedback(.impact(weight: .medium), trigger: purchaseTapTrigger)
+
+            Text(isLifetime ? "Tek seferlik ödeme, yenilenmez" : "İstediğiniz zaman iptal edebilirsiniz")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal)
     }
 
     private func periodText(for product: Product) -> String {

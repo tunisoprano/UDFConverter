@@ -30,6 +30,8 @@ enum L10nKey {
     case premiumUpgradeButton
     case premiumRestoreButton
     case premiumActiveBadge
+    case planMonthly
+    case planLifetime
     case legalSectionTitle
     case privacyPolicy
     case termsOfUse
@@ -82,6 +84,8 @@ final class LocalizationManager: ObservableObject {
         .premiumUpgradeButton: [.turkish: "Premium'a Geç", .english: "Upgrade to Premium"],
         .premiumRestoreButton: [.turkish: "Satın Alımları Geri Yükle", .english: "Restore Purchases"],
         .premiumActiveBadge: [.turkish: "Premium Aktif", .english: "Premium Active"],
+        .planMonthly: [.turkish: "Aylık", .english: "Monthly"],
+        .planLifetime: [.turkish: "Ömür Boyu", .english: "Lifetime"],
         .legalSectionTitle: [.turkish: "Yasal & Bilgi", .english: "Legal & Info"],
         .privacyPolicy: [.turkish: "Gizlilik Politikası", .english: "Privacy Policy"],
         .termsOfUse: [.turkish: "Kullanım Koşulları", .english: "Terms of Use"],
