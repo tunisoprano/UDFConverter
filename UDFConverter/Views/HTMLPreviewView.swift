@@ -2,12 +2,18 @@ import SwiftUI
 
 struct PreviewScreen: View {
     let pdfURL: URL
+    let document: UDFDocument
     let fileName: String
-    
+
     @EnvironmentObject var storeManager: StoreManager
     @Environment(\.dismiss) private var dismiss
-    @State private var showShareSheet = false
-    
+
+    @State private var shareItem: ShareItem?
+    @State private var showPaywall = false
+    @State private var exportError: String?
+
+    private let docxGenerator = DOCXGenerator()
+
     var body: some View {
         NavigationStack {
             PDFKitView(url: pdfURL)
@@ -19,8 +25,23 @@ struct PreviewScreen: View {
                         Button("Kapat") { dismiss() }
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            handleExport()
+                        Menu {
+                            Button {
+                                exportPDF()
+                            } label: {
+                                Label("PDF olarak paylaş", systemImage: "doc.richtext")
+                            }
+
+                            Button {
+                                exportDOCX()
+                            } label: {
+                                Label(
+                                    storeManager.isPremium
+                                        ? "Word olarak paylaş (.docx)"
+                                        : "Word olarak paylaş (.docx) — Premium",
+                                    systemImage: storeManager.isPremium ? "doc.text" : "lock.fill"
+                                )
+                            }
                         } label: {
                             Image(systemName: "square.and.arrow.up")
                                 .foregroundStyle(.white)
@@ -29,28 +50,64 @@ struct PreviewScreen: View {
                         }
                     }
                 }
-                .sheet(isPresented: $showShareSheet) {
-                    ShareSheet(items: [pdfURL])
+                .sheet(item: $shareItem) { item in
+                    ShareSheet(items: [item.url])
+                }
+                .sheet(isPresented: $showPaywall) {
+                    PaywallView()
+                }
+                .alert("Dışa aktarma başarısız",
+                       isPresented: Binding(get: { exportError != nil },
+                                            set: { if !$0 { exportError = nil } })) {
+                    Button("Tamam", role: .cancel) { exportError = nil }
+                } message: {
+                    Text(exportError ?? "")
                 }
         }
         .tint(.brandPrimary)
     }
-    
-    private func handleExport() {
+
+    // MARK: - Export
+
+    private func exportPDF() {
+        presentShare(for: pdfURL)
+    }
+
+    private func exportDOCX() {
+        guard storeManager.isPremium else {
+            showPaywall = true
+            return
+        }
+        do {
+            let url = try docxGenerator.generate(from: document, fileName: fileName)
+            presentShare(for: url)
+        } catch {
+            exportError = error.localizedDescription
+        }
+    }
+
+    /// Reklam gösterimi ile paylaşım sayfasını sırayla açar.
+    private func presentShare(for url: URL) {
         #if os(iOS) && !targetEnvironment(macCatalyst)
         if !storeManager.isPremium {
             if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
                let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController {
                 AdManager.shared.showInterstitial(from: rootVC) {
-                    showShareSheet = true
+                    shareItem = ShareItem(url: url)
                 }
                 return
             }
         }
         #endif
-        
-        showShareSheet = true
+
+        shareItem = ShareItem(url: url)
     }
+}
+
+/// Paylaşılacak dosyayı `sheet(item:)` ile eşleştirebilmek için sarmalayıcı.
+private struct ShareItem: Identifiable {
+    let url: URL
+    var id: String { url.absoluteString }
 }
 
 // MARK: - Share Sheet

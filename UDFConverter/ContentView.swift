@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var showPaywall   = false
     @State private var showLimitReached = false
     @State private var generatedPDFURL: URL? = nil
+    @State private var parsedDocument: UDFDocument? = nil
     @State private var selectedName  = ""
     @State private var errorMessage: String?
     @State private var isProcessing  = false
@@ -121,8 +122,8 @@ struct ContentView: View {
                 handlePickerResult(result)
             }
             .sheet(isPresented: $showPreview) {
-                if let url = generatedPDFURL {
-                    PreviewScreen(pdfURL: url, fileName: selectedName)
+                if let url = generatedPDFURL, let document = parsedDocument {
+                    PreviewScreen(pdfURL: url, document: document, fileName: selectedName)
                 }
             }
             .sheet(isPresented: $showPaywall) {
@@ -168,6 +169,7 @@ struct ContentView: View {
                         self.isProcessing = false
                         if let pdfURL = pdfURL {
                             self.generatedPDFURL = pdfURL
+                            self.parsedDocument = document
                             self.showPreview = true
                         } else {
                             self.errorMessage = "PDF dönüştürme işlemi başarısız oldu."
