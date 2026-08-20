@@ -52,7 +52,7 @@ UDFConverter/
 
 ## Geliştirici
 
-**Tolgahan Sarı & Tunahan Sarı**
+**Av. Tolgahan Sarı & Tunahan Sarı**
 
 Sorularınız için: [tunahansaridev@gmail.com](mailto:tunahansaridev@gmail.com)
 
