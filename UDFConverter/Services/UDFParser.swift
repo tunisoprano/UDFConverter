@@ -213,9 +213,13 @@ extension UDFParser: XMLParserDelegate {
     }
 
     func parser(_ parser: XMLParser, foundCDATA data: Data) {
+        // Büyük CDATA blokları XMLParser tarafından birden fazla parçaya
+        // bölünüp foundCDATA birden çok kez çağrılabiliyor — bu yüzden
+        // üzerine yazmak yerine biriktiriyoruz (insideContent, ilgili
+        // "content" elemanı didEndElement'te kapanana kadar açık kalır).
         guard insideContent, !insideParagraph,
               let text = String(data: data, encoding: .utf8) else { return }
-        fullText = text; insideContent = false
+        fullText += text
     }
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
@@ -227,6 +231,9 @@ extension UDFParser: XMLParserDelegate {
                 namespaceURI: String?,
                 qualifiedName _: String?) {
         switch el {
+
+        case "content":
+            if insideContent, !insideParagraph { insideContent = false }
 
         case "paragraph":
             let p = UDFParagraph(

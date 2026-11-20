@@ -37,8 +37,6 @@ enum L10nKey {
     case termsOfUse
     case rateUs
     case contactSupport
-    case comingSoonTitle
-    case comingSoonMessage
 }
 
 /// Sistem dilinden bağımsız, uygulama içi anlık dil değişimi sağlayan basit yerelleştirme yöneticisi.
@@ -91,7 +89,5 @@ final class LocalizationManager: ObservableObject {
         .termsOfUse: [.turkish: "Kullanım Koşulları", .english: "Terms of Use"],
         .rateUs: [.turkish: "Bizi Değerlendirin", .english: "Rate Us"],
         .contactSupport: [.turkish: "Destek / İletişim", .english: "Support / Contact"],
-        .comingSoonTitle: [.turkish: "Yakında", .english: "Coming Soon"],
-        .comingSoonMessage: [.turkish: "Bu sayfa yakında eklenecek.", .english: "This page will be added soon."],
     ]
 }

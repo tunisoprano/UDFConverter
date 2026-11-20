@@ -61,9 +61,8 @@ struct ContentView: View {
                             PremiumChip()
                         } else {
                             UsageLimitCard(
-                                freeRemaining: usageLimitManager.freeRemaining,
+                                freeRemaining: usageLimitManager.remaining,
                                 weeklyLimit: UsageLimitManager.weeklyFreeLimit,
-                                bonusCredits: usageLimitManager.bonusCredits,
                                 nextResetDate: usageLimitManager.nextResetDate
                             )
                         }
@@ -86,14 +85,6 @@ struct ContentView: View {
                     }
 
                     Spacer()
-
-                    // Sadece iOS'te ve Premium olmayanlara banner göster
-                    #if os(iOS)
-                    if !storeManager.isPremium {
-                        BannerAdView()
-                            .frame(width: 320, height: 50)
-                    }
-                    #endif
                 }
                 .padding(.top, 32)
                 .animation(.easeInOut(duration: 0.25), value: isProcessing)
@@ -191,10 +182,7 @@ struct ContentView: View {
 private struct UsageLimitCard: View {
     let freeRemaining: Int
     let weeklyLimit: Int
-    let bonusCredits: Int
     let nextResetDate: Date
-
-    private var totalRemaining: Int { freeRemaining + bonusCredits }
 
     private static let weekdayFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -215,17 +203,11 @@ private struct UsageLimitCard: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("\(totalRemaining) ücretsiz dönüştürme kaldı")
+                Text("\(freeRemaining) ücretsiz dönüştürme kaldı")
                     .font(.subheadline.weight(.semibold))
-                if bonusCredits > 0 {
-                    Text("\(freeRemaining) haftalık + \(bonusCredits) reklam bonusu")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text("\(Self.weekdayFormatter.string(from: nextResetDate)) günü yenilenir")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                Text("\(Self.weekdayFormatter.string(from: nextResetDate)) günü yenilenir")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Spacer()
@@ -235,12 +217,6 @@ private struct UsageLimitCard: View {
                     Circle()
                         .fill(i < freeRemaining ? Color.brandPrimary : Color.secondary.opacity(0.2))
                         .frame(width: 7, height: 7)
-                }
-                if bonusCredits > 0 {
-                    Text("+\(bonusCredits)")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(Color.brandAccent)
-                        .padding(.leading, 2)
                 }
             }
         }

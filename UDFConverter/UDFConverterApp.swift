@@ -7,11 +7,6 @@
 
 import SwiftUI
 
-#if os(iOS)
-import GoogleMobileAds
-import AppTrackingTransparency
-#endif
-
 @main
 struct UDFConverterApp: App {
     @StateObject private var storeManager = StoreManager()
@@ -26,18 +21,6 @@ struct UDFConverterApp: App {
                 .environmentObject(usageLimitManager)
                 .environmentObject(appearanceManager)
                 .environmentObject(localizationManager)
-                .task {
-                    await requestTrackingAndStartAds()
-                }
         }
-    }
-
-    private func requestTrackingAndStartAds() async {
-        #if os(iOS)
-        if ATTrackingManager.trackingAuthorizationStatus == .notDetermined {
-            _ = await ATTrackingManager.requestTrackingAuthorization()
-        }
-        _ = await MobileAds.shared.start()
-        #endif
     }
 }

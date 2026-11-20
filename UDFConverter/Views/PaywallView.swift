@@ -37,7 +37,6 @@ struct PaywallView: View {
 
                 VStack(alignment: .leading, spacing: 16) {
                     FeatureRow(icon: "doc.text", title: "Word (.docx) Çıktısı", description: "Belgeyi düzenlenebilir Word dosyası olarak dışa aktarın, dilediğiniz gibi üzerinde çalışın.")
-                    FeatureRow(icon: "nosign", title: "Reklamsız Deneyim", description: "PDF oluştururken araya giren veya alt kısımda duran tüm reklamları tamamen kaldırın.")
                     FeatureRow(icon: "infinity", title: "Sınırsız Dönüştürme", description: "Dilediğiniz kadar UDF dosyasını saniyeler içinde dönüştürün.")
                 }
                 .padding(.horizontal)
@@ -74,9 +73,8 @@ struct PaywallView: View {
                             .padding(.horizontal, 24)
 
                         HStack(spacing: 16) {
-                            // TODO: Yayına almadan önce gerçek Kullanım Koşulları ve Gizlilik Politikası URL'leriyle değiştirin.
-                            Link("Kullanım Koşulları", destination: URL(string: "https://example.com/terms")!)
-                            Link("Gizlilik Politikası", destination: URL(string: "https://example.com/privacy")!)
+                            Link("Kullanım Koşulları", destination: URL(string: "https://tunisoprano.github.io/udf2pdf-terms/")!)
+                            Link("Gizlilik Politikası", destination: URL(string: "https://tunisoprano.github.io/udf2pdf-privacy/")!)
                         }
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(Color.brandPrimary)

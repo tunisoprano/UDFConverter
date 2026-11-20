@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		042CFE102FB137F900EA3FF7 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 042CFE0F2FB137F900EA3FF7 /* ZIPFoundation */; };
-		04F88A3C302930C4008DD051 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 04F88A3B302930C4008DD051 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,7 +70,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04F88A3C302930C4008DD051 /* GoogleMobileAds in Frameworks */,
 				042CFE102FB137F900EA3FF7 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -142,7 +140,6 @@
 			name = UDFConverter;
 			packageProductDependencies = (
 				042CFE0F2FB137F900EA3FF7 /* ZIPFoundation */,
-				04F88A3B302930C4008DD051 /* GoogleMobileAds */,
 			);
 			productName = UDFConverter;
 			productReference = 042CFDD82FB1364400EA3FF7 /* UDFConverter.app */;
@@ -228,7 +225,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				042CFE0D2FB1376500EA3FF7 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
-				04F88A3A302930C4008DD051 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 042CFDD92FB1364400EA3FF7 /* Products */;
@@ -431,14 +427,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = F3V9L8ZFD5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = UDFConverter/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = UDF2PDF;
 				INFOPLIST_KEY_GADApplicationIdentifier = "ca-app-pub-1674562447830288~5149116361";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -448,7 +444,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tuni.udfconverter.UDFConverter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -467,14 +463,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = F3V9L8ZFD5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = UDFConverter/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = UDF2PDF;
 				INFOPLIST_KEY_GADApplicationIdentifier = "ca-app-pub-1674562447830288~5149116361";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -484,7 +480,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tuni.udfconverter.UDFConverter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -631,14 +627,6 @@
 				minimumVersion = 0.9.20;
 			};
 		};
-		04F88A3A302930C4008DD051 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 13.7.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -646,11 +634,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 042CFE0D2FB1376500EA3FF7 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
-		};
-		04F88A3B302930C4008DD051 /* GoogleMobileAds */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 04F88A3A302930C4008DD051 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
-			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

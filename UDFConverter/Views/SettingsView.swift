@@ -7,13 +7,14 @@ struct SettingsView: View {
     @Environment(\.openURL) private var openURL
 
     @State private var showPaywall = false
-    @State private var legalSheetContent: LegalSheetContent?
 
     // App Store Connect Apple ID: 6802319326
     private let reviewURL = URL(string: "https://apps.apple.com/app/id6802319326?action=write-review")!
 
-    // TODO: Yayına almadan önce "support@example.com" yerine gerçek destek e-postanızı girin.
-    private let supportEmail = "support@example.com"
+    private let privacyPolicyURL = URL(string: "https://tunisoprano.github.io/udf2pdf-privacy/")!
+    private let termsOfUseURL = URL(string: "https://tunisoprano.github.io/udf2pdf-terms/")!
+
+    private let supportEmail = "tunahansaridev@gmail.com"
 
     private var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -72,11 +73,11 @@ struct SettingsView: View {
                 }
 
                 Section(L(.legalSectionTitle)) {
-                    Button { legalSheetContent = .privacyPolicy } label: {
-                        SettingsRow(icon: "hand.raised", title: L(.privacyPolicy), isExternal: false)
+                    Button { openURL(privacyPolicyURL) } label: {
+                        SettingsRow(icon: "hand.raised", title: L(.privacyPolicy), isExternal: true)
                     }
-                    Button { legalSheetContent = .termsOfUse } label: {
-                        SettingsRow(icon: "doc.text", title: L(.termsOfUse), isExternal: false)
+                    Button { openURL(termsOfUseURL) } label: {
+                        SettingsRow(icon: "doc.text", title: L(.termsOfUse), isExternal: true)
                     }
                     Button { openURL(reviewURL) } label: {
                         SettingsRow(icon: "star", title: L(.rateUs), isExternal: true)
@@ -102,9 +103,6 @@ struct SettingsView: View {
             .navigationTitle(L(.settingsTitle))
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
-            }
-            .sheet(item: $legalSheetContent) { content in
-                LegalPlaceholderView(content: content)
             }
         }
     }
@@ -135,62 +133,6 @@ struct SettingsView: View {
     private func openSupportEmail() {
         guard let url = URL(string: "mailto:\(supportEmail)") else { return }
         openURL(url)
-    }
-}
-
-// MARK: - Legal placeholder sheet
-
-private enum LegalSheetContent: String, Identifiable {
-    case privacyPolicy
-    case termsOfUse
-
-    var id: String { rawValue }
-}
-
-private struct LegalPlaceholderView: View {
-    let content: LegalSheetContent
-
-    @EnvironmentObject var localizationManager: LocalizationManager
-    @Environment(\.dismiss) private var dismiss
-
-    private var title: String {
-        switch content {
-        case .privacyPolicy: return localizationManager.string(.privacyPolicy)
-        case .termsOfUse:    return localizationManager.string(.termsOfUse)
-        }
-    }
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                IconBadge(systemName: "doc.text", diameter: 72)
-                    .padding(.top, 24)
-
-                Text(localizationManager.string(.comingSoonTitle))
-                    .font(.title2.bold())
-
-                Text(localizationManager.string(.comingSoonMessage))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-
-                Spacer()
-            }
-            .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "xmark")
-                            .foregroundStyle(.secondary)
-                            .padding(8)
-                            .background(Color(.secondarySystemBackground), in: Circle())
-                    }
-                }
-            }
-        }
-        .presentationDetents([.medium])
     }
 }
 

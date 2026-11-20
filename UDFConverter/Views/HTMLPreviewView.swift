@@ -86,20 +86,7 @@ struct PreviewScreen: View {
         }
     }
 
-    /// Reklam gösterimi ile paylaşım sayfasını sırayla açar.
     private func presentShare(for url: URL) {
-        #if os(iOS) && !targetEnvironment(macCatalyst)
-        if !storeManager.isPremium {
-            if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
-               let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController {
-                AdManager.shared.showInterstitial(from: rootVC) {
-                    shareItem = ShareItem(url: url)
-                }
-                return
-            }
-        }
-        #endif
-
         shareItem = ShareItem(url: url)
     }
 }
